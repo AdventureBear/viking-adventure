@@ -3,9 +3,7 @@ export enum Alignment {
     Skuggasmith = "Skuggasmith",
     Solheart = "Solheart",
     Myrkrider = "Myrkrider",
-    PEACEFUL = 'PEACEFUL',
-    NEUTRAL = 'NEUTRAL',
-    AGGRESSIVE = 'AGGRESSIVE'
+
 }
 
 export enum StoryPhase {
@@ -33,11 +31,7 @@ export interface Scene {
     isRequired: boolean;
     isDynamicallyGenerated?: boolean;
     imageUrl?: string;
-    choices: {
-        text: string;
-        nextScene: string;
-        alignment?: Alignment;
-    }[];
+    choices: Choice[];
 }
 
 export interface GameState {

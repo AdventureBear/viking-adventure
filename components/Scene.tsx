@@ -2,8 +2,9 @@
 
 import React, { useRef, useState } from 'react'
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Choice as ChoiceType, Scene as SceneType, Alignment } from '@/app/types'
+import { Choice as ChoiceType, Scene as SceneType } from '@/app/types'
 import {ChoiceComponent} from './Choice'
+import Image from 'next/image'
 
 interface SceneProps {
   scene: SceneType
@@ -41,7 +42,10 @@ export function SceneComponent({ scene, onChoice }: SceneProps) {
     <div className="relative h-screen flex flex-col">
       {/* Cinematic image - takes up 60% of the screen height */}
       <div className="w-full h-[60vh] relative">
-        <img
+        <Image
+          priority
+          width={1920}
+          height={1080}
           src={imageUrl}
           alt="Scene landscape"
           className="w-full h-full object-cover"
@@ -95,12 +99,8 @@ export function SceneComponent({ scene, onChoice }: SceneProps) {
             <h3 className="text-sm font-bold text-amber-200 border-b border-amber-900/50 pb-1 mb-1">Your Choices:</h3>
             <div className="grid gap-1">
               {scene.choices.map((choice, index) => {
-                const safeChoice = {
-                  ...choice,
-                  alignment: choice.alignment ?? Alignment.NEUTRAL,
-                };
                 return (
-                  <ChoiceComponent key={index} choice={safeChoice} onSelect={() => onChoice(safeChoice)} />
+                  <ChoiceComponent key={index} choice={choice} onSelect={() => onChoice(choice)} />
                 );
               })}
             </div>

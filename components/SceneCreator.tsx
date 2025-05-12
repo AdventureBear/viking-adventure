@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertTriangle, CheckCircle, Send } from "lucide-react"
 import { Scene } from '@/lib/scenes'
-import { StoryPhase } from '@/app/types'
 
 interface SceneCreatorProps {
   sceneId: string

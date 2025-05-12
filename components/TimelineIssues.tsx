@@ -1,10 +1,9 @@
 'use client'
-
+import { Scene } from '@/app/types'
 import React from 'react'
-import { Scene } from '@/lib/scenes.bak'
 
 interface TimelineIssuesProps {
-    scenes: Record<string, Scene>
+    scenes: Scene[]
 }
 
 export function TimelineIssuesComponent({ scenes }: TimelineIssuesProps) {
