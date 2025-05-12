@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     </Link>
                 </li>
                 <li>
-                    <Link href="/developer-dashboard" className="hover:underline">
+                    <Link href="/developer" className="hover:underline">
                         Developer Dashboard
                     </Link>
                 </li>

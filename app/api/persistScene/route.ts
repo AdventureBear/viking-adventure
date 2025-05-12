@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import fs from 'fs/promises'
 import path from 'path'
 import { Scene } from '@/lib/scenes'
-import { StoryPhase } from '@/lib/storyArc'
 
 export async function POST(request: Request) {
     const scene: Scene = await request.json()

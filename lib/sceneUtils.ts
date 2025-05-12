@@ -1,6 +1,7 @@
 'use client'
 
-import { scenes, Scene } from './scenes'
+import { Scene } from '@/app/types'
+import { allScenes } from './scenes'
 
 const dynamicallyGeneratedScenes: Record<string, Scene> = {}
 
@@ -12,5 +13,5 @@ export function addDynamicallyGeneratedScene(scene: Scene) {
 }
 
 export function getAllScenes(): Record<string, Scene> {
-  return { ...scenes, ...dynamicallyGeneratedScenes }
+  return { ...allScenes };
 }

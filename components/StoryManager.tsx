@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Scene } from '@/lib/scenes'
-import { StoryPhase } from '@/lib/storyArc'
+import { StoryPhase } from '@/app/types'
 
 interface StoryManagerProps {
     scenes: Record<string, Scene>

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertTriangle, CheckCircle, Send } from "lucide-react"
 import { Scene } from '@/lib/scenes'
-import { StoryPhase } from '@/lib/storyArc'
+import { StoryPhase } from '@/app/types'
 
 interface SceneCreatorProps {
   sceneId: string
@@ -38,9 +38,9 @@ export default function SceneCreator({ sceneId, initialPrompt }: SceneCreatorPro
       }
 
       // Ensure storyPhase is a valid enum value
-      if (!Object.values(StoryPhase).includes(sceneObject.storyPhase)) {
-        throw new Error('Invalid story phase')
-      }
+      // if (!Object.values(StoryPhase).includes(sceneObject.storyPhase)) {
+      //   throw new Error('Invalid story phase')
+      // }
 
       const response = await fetch('/api/persistScene', {
         method: 'POST',

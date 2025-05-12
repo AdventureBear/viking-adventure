@@ -2,13 +2,16 @@
 
 import React from 'react'
 import { Progress } from "@/components/ui/progress"
-import { Alignment } from '../lib/scenes'
+import { Alignment } from '@/app/types'
 
 interface AlignmentTrackerProps {
   alignmentScores: Record<Alignment, number>
 }
 
 export function AlignmentTrackerComponent({ alignmentScores }: AlignmentTrackerProps) {
+  console.log('alignmentScores:', alignmentScores);
+  const totalChoices = Object.values(alignmentScores).reduce((sum, val) => sum + val, 0);
+
   const getDominantAlignment = (): Alignment => {
     return Object.entries(alignmentScores).reduce((a, b) => a[1] > b[1] ? a : b)[0] as Alignment
   }
@@ -18,12 +21,18 @@ export function AlignmentTrackerComponent({ alignmentScores }: AlignmentTrackerP
       <h3 className="text-lg font-bold mb-2">Your Alignment:</h3>
       <p>Dominant Alignment: {getDominantAlignment()}</p>
       <div className="grid grid-cols-2 gap-4">
-        {(Object.entries(alignmentScores) as [Alignment, number][]).map(([alignment, score]) => (
-          <div key={alignment}>
-            <p className="font-semibold">{alignment}</p>
-            <Progress value={score * 20} className="w-full" />
-          </div>
-        ))}
+        {(Object.entries(alignmentScores) as [Alignment, number][]).map(([alignment, score]) => {
+          const percent = totalChoices > 0 ? Math.round((score / totalChoices) * 100) : 0;
+          return (
+            <div key={alignment}>
+              <p className="font-semibold flex justify-between">
+                <span>{alignment}</span>
+                <span>{percent}%</span>
+              </p>
+              <div style={{ width: percent + '%', height: 10, background: 'blue', borderRadius: 4 }} />
+            </div>
+          );
+        })}
       </div>
     </div>
   )

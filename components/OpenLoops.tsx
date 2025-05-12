@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { Scene } from '@/lib/scenes'
-import { StoryPhase } from '@/lib/storyArc'
+import { StoryPhase } from '@/app/types'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Circle } from "lucide-react"
@@ -12,11 +12,11 @@ interface OpenLoopsProps {
 
 const phaseColors: Record<StoryPhase, string> = {
     [StoryPhase.PEACEFUL_BEGINNINGS]: 'text-green-500',
-    [StoryPhase.FIRST_RAIDS]: 'text-yellow-500',
+    [StoryPhase.FIRST_VENTURES]: 'text-yellow-500',
     [StoryPhase.EXPANSION]: 'text-blue-500',
     [StoryPhase.SETTLEMENT]: 'text-purple-500',
     [StoryPhase.CONFLICT]: 'text-red-500',
-    [StoryPhase.RESOLUTION]: 'text-gray-500',
+    [StoryPhase.LEGACY]: 'text-gray-500',
 }
 
 export default function OpenLoopsComponent({ scenes, connections }: OpenLoopsProps) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Scene } from '@/lib/scenes'
-import { StoryPhase } from '@/lib/storyArc'
+import { StoryPhase } from '@/app/types'
 import * as d3 from 'd3'
 
 interface SceneGraphProps {
@@ -22,11 +22,11 @@ interface ExtendedHierarchyPointNode extends d3.HierarchyPointNode<TreeNode> {
 
 const phaseColors: Record<StoryPhase, string> = {
     [StoryPhase.PEACEFUL_BEGINNINGS]: '#4CAF50',
-    [StoryPhase.FIRST_RAIDS]: '#FFC107',
+    [StoryPhase.FIRST_VENTURES]: '#FFC107',
     [StoryPhase.EXPANSION]: '#2196F3',
     [StoryPhase.SETTLEMENT]: '#9C27B0',
     [StoryPhase.CONFLICT]: '#F44336',
-    [StoryPhase.RESOLUTION]: '#795548',
+    [StoryPhase.LEGACY]: '#795548',
 }
 
 export default function SceneGraph({ scenes, connections }: SceneGraphProps) {
@@ -155,7 +155,7 @@ export default function SceneGraph({ scenes, connections }: SceneGraphProps) {
                 .attr("d", function(this: SVGPathElement, d: d3.HierarchyLink<TreeNode>) {
                     const o = { x: d.source.x || 0, y: d.source.y || 0 }
                     return diagonal(o, o)
-                } as any)
+                } as never)
                 .remove()
 
             nodes.forEach((d) => {

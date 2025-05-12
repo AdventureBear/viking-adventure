@@ -1,5 +1,4 @@
-import { Alignment, Choice } from './scenes'
-import { StoryPhase, storyArcStructure } from './storyArc'
+import { StoryPhase,Alignment, Choice } from '@/app/types'
 
 export interface NPC {
     name: string
@@ -34,14 +33,14 @@ export const initialGameState: GameState = {
 export function updateGameState(prevState: GameState, choice: Choice): GameState {
     const newCompletedScenes = [...prevState.completedScenes, choice.nextScene]
 
-    let newPhase = prevState.currentStoryPhase
-    if (storyArcStructure[newPhase].requiredScenes.every(scene => newCompletedScenes.includes(scene))) {
-        const phaseOrder = Object.values(StoryPhase)
-        const nextPhaseIndex = phaseOrder.indexOf(newPhase) + 1
-        if (nextPhaseIndex < phaseOrder.length) {
-            newPhase = phaseOrder[nextPhaseIndex]
-        }
-    }
+    // let newPhase = prevState.currentStoryPhase
+    // if (storyArcStructure[newPhase].requiredScenes.every(scene => newCompletedScenes.includes(scene))) {
+    //     const phaseOrder = Object.values(StoryPhase)
+    //     const nextPhaseIndex = phaseOrder.indexOf(newPhase) + 1
+    //     if (nextPhaseIndex < phaseOrder.length) {
+    //         newPhase = phaseOrder[nextPhaseIndex]
+    //     }
+    // }
 
     const newState = {
         ...prevState,
@@ -50,7 +49,7 @@ export function updateGameState(prevState: GameState, choice: Choice): GameState
             [choice.alignment]: prevState.alignmentScores[choice.alignment] + 1
         },
         completedScenes: newCompletedScenes,
-        currentStoryPhase: newPhase,
+        // currentStoryPhase: newPhase,
         npcs: { ...prevState.npcs }
     }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Scene } from '@/lib/scenes'
+import { Scene } from '@/lib/scenes.bak'
 
 interface TimelineIssuesProps {
     scenes: Record<string, Scene>

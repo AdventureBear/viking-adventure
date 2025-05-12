@@ -1,26 +1,184 @@
-import React from 'react';
-import { allScenes, initialSceneId } from '@/lib/scenes';
-import { StoryPhase, Alignment } from '@/app/types';
+'use client';
 
-const DeveloperDashboard: React.FC = () => {
+import React, { useEffect, useRef } from 'react';
+import { allScenes } from '@/lib/scenes';
+import { StoryPhase } from '@/app/types';
+import * as d3 from 'd3';
+import * as d3dag from 'd3-dag';
+
+const PHASE_COLORS: Record<string, string> = {
+  PEACEFUL_BEGINNINGS: '#4CAF50',
+  FIRST_VENTURES: '#FFC107',
+  EXPANSION: '#2196F3',
+  CONFLICT: '#E57373',
+  SETTLEMENT: '#9C27B0',
+  LEGACY: '#795548',
+};
+
+interface DagSceneNode {
+  id: string;
+  name: string;
+  phase: StoryPhase;
+  parentIds: string[];
+}
+
+type DagNodeDatum = {
+  x: number;
+  y: number;
+  data: DagSceneNode;
+};
+
+type DagLinkDatum = {
+  source: DagNodeDatum;
+  target: DagNodeDatum;
+};
+
+const nodeRadius = 18;
+
+const DeveloperDashboard = () => {
+  const dagRef = useRef<HTMLDivElement>(null);
+
   // Calculate metrics
   const totalScenes = Object.keys(allScenes).length;
   const scenesByPhase = Object.values(allScenes).reduce((acc, scene) => {
     acc[scene.storyPhase] = (acc[scene.storyPhase] || 0) + 1;
     return acc;
   }, {} as Record<StoryPhase, number>);
-
   const scenesByAlignment = Object.values(allScenes).reduce((acc, scene) => {
     scene.choices.forEach(choice => {
-      acc[choice.alignment] = (acc[choice.alignment] || 0) + 1;
+      if (choice.alignment) {
+        acc[choice.alignment] = (acc[choice.alignment] || 0) + 1;
+      }
     });
     return acc;
-  }, {} as Record<Alignment, number>);
+  }, {} as Record<string, number>);
+
+  // Prepare DAG data for d3-dag
+  const getDagData = (): DagSceneNode[] => {
+    const nodes = Object.values(allScenes).map(scene => ({
+      id: scene.id,
+      name: scene.name,
+      phase: scene.storyPhase,
+      parentIds: [] as string[],
+    }));
+    const nodeMap = new Map(nodes.map(n => [n.id, n]));
+    Object.values(allScenes).forEach(scene => {
+      scene.choices.forEach(choice => {
+        const target = nodeMap.get(choice.nextScene);
+        if (target) {
+          target.parentIds.push(scene.id);
+        }
+      });
+    });
+    return nodes;
+  };
+
+  // Get unique phases for legend and background bands
+  const dagData = getDagData();
+  const uniquePhases: string[] = Array.from(new Set(dagData.map((d) => d.phase)));
+
+  useEffect(() => {
+    if (!dagRef.current) return;
+    d3.select(dagRef.current).selectAll('*').remove();
+
+    const builder = d3dag.graphStratify();
+    const graph = builder(dagData);
+
+    // Use layeringSimplex and a larger vertical gap
+    const layout = d3dag.sugiyama()
+      .nodeSize([nodeRadius * 2, nodeRadius * 2])
+      .gap([nodeRadius, 100])
+      .layering(d3dag.layeringSimplex());
+    layout(graph);
+
+    const width = 1200;
+    const height = 900;
+    const svg = d3.select(dagRef.current)
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
+
+    // Add drop shadow filter
+    const defs = svg.append('defs');
+    const filter = defs.append('filter')
+      .attr('id', 'drop-shadow')
+      .attr('height', '130%');
+    filter.append('feDropShadow')
+      .attr('dx', 0)
+      .attr('dy', 2)
+      .attr('stdDeviation', 3)
+      .attr('flood-color', '#000')
+      .attr('flood-opacity', 0.2);
+
+    // Draw links
+    svg.append('g')
+      .selectAll('path')
+      .data(graph.links() as Iterable<DagLinkDatum>)
+      .enter()
+      .append('path')
+      .attr('d', (d: DagLinkDatum) =>
+        `M${d.source.x},${d.source.y}C${(d.source.x + d.target.x) / 2},${d.source.y} ${(d.source.x + d.target.x) / 2},${d.target.y} ${d.target.x},${d.target.y}`
+      )
+      .attr('stroke', (d: DagLinkDatum) => PHASE_COLORS[d.source.data.phase] || '#999')
+      .attr('stroke-width', 2)
+      .attr('fill', 'none')
+      .attr('opacity', 0.7);
+
+    // Draw nodes
+    const node = svg.append('g')
+      .selectAll('g')
+      .data(graph.nodes() as Iterable<DagNodeDatum>)
+      .enter()
+      .append('g')
+      .attr('transform', (d: DagNodeDatum) => `translate(${d.x},${d.y})`);
+
+    node.append('circle')
+      .attr('r', nodeRadius)
+      .attr('fill', (d: DagNodeDatum) => PHASE_COLORS[d.data.phase] || '#888')
+      .attr('filter', 'url(#drop-shadow)');
+
+    node.append('text')
+      .attr('x', nodeRadius + 10)
+      .attr('y', 0)
+      .attr('text-anchor', 'start')
+      .attr('alignment-baseline', 'middle')
+      .style('font-size', '15px')
+      .style('font-weight', 'bold')
+      .style('fill', '#222')
+      .text((d: DagNodeDatum) => d.data.name);
+
+    // Add phase labels as background bands
+    uniquePhases.forEach((phase, i) => {
+      svg.append('rect')
+        .attr('x', 0)
+        .attr('y', (height / uniquePhases.length) * i)
+        .attr('width', width)
+        .attr('height', height / uniquePhases.length)
+        .attr('fill', PHASE_COLORS[phase] || '#eee')
+        .attr('opacity', 0.07)
+        .lower();
+      svg.append('text')
+        .attr('x', 10)
+        .attr('y', (height / uniquePhases.length) * i + 30)
+        .text(phase)
+        .style('font-size', '18px')
+        .style('fill', PHASE_COLORS[phase] || '#888')
+        .style('font-weight', 'bold')
+        .attr('opacity', 0.5);
+    });
+  }, [dagData, uniquePhases]);
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-8">Viking Adventure Developer Dashboard</h1>
-      
+    <div className="p-8">
+      <h1 className="text-3xl font-bold mb-8">Developer Dashboard</h1>
+      <div className="mb-4 flex flex-wrap items-center gap-6">
+        {uniquePhases.map((phase) => (
+          <div key={phase} className="flex items-center gap-2">
+            <span style={{ background: PHASE_COLORS[phase], borderRadius: '50%', width: 18, height: 18, display: 'inline-block' }}></span>
+            <span style={{ color: PHASE_COLORS[phase], fontWeight: 700 }}>{phase}</span>
+          </div>
+        ))}
+      </div>
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-lg shadow">
@@ -51,60 +209,57 @@ const DeveloperDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Scene Graph */}
+      {/* Scene Visualization */}
       <div className="bg-white p-6 rounded-lg shadow mb-8">
-        <h2 className="text-xl font-semibold mb-4">Scene Connections</h2>
+        <h2 className="text-xl font-semibold mb-4">Story Graph</h2>
         <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="px-4 py-2 text-left">Scene ID</th>
-                <th className="px-4 py-2 text-left">Name</th>
-                <th className="px-4 py-2 text-left">Phase</th>
-                <th className="px-4 py-2 text-left">Choices</th>
-                <th className="px-4 py-2 text-left">Required</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.values(allScenes).map((scene) => (
-                <tr key={scene.id} className="border-t">
-                  <td className="px-4 py-2">{scene.id}</td>
-                  <td className="px-4 py-2">{scene.name}</td>
-                  <td className="px-4 py-2">{scene.storyPhase}</td>
-                  <td className="px-4 py-2">
-                    <ul className="list-disc list-inside">
-                      {scene.choices.map((choice, index) => (
-                        <li key={index}>
-                          {choice.text} → {choice.nextScene}
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-                  <td className="px-4 py-2">{scene.isRequired ? 'Yes' : 'No'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div ref={dagRef} className="w-full h-[900px]"></div>
         </div>
       </div>
 
-      {/* Story Flow */}
+      {/* Scene Details */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">Story Flow</h2>
-        <div className="space-y-4">
+        <h2 className="text-xl font-semibold mb-4">Scene Details</h2>
+        <div className="space-y-6">
           {Object.values(allScenes).map((scene) => (
-            <div key={scene.id} className="border-l-4 border-blue-500 pl-4">
-              <h3 className="font-semibold">{scene.name}</h3>
-              <p className="text-sm text-gray-600">{scene.text.substring(0, 100)}...</p>
-              <div className="mt-2">
+            <div key={scene.id} id={`scene-${scene.id}`} className="border-l-4 border-blue-500 pl-4 py-4">
+              <h3 className="font-semibold text-lg mb-2">{scene.name}</h3>
+              <p className="text-gray-700 mb-4">{scene.text}</p>
+              <div className="flex flex-wrap gap-2 mb-4">
                 <span className="text-sm bg-gray-200 px-2 py-1 rounded">
                   {scene.storyPhase}
                 </span>
                 {scene.isRequired && (
-                  <span className="ml-2 text-sm bg-green-200 px-2 py-1 rounded">
+                  <span className="text-sm bg-green-200 px-2 py-1 rounded">
                     Required
                   </span>
                 )}
+              </div>
+              <div className="mt-4">
+                <h4 className="font-medium mb-2">Choices:</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {scene.choices.map((choice, index) => (
+                    <a
+                      key={index}
+                      href={`#scene-${choice.nextScene}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        document.getElementById(`scene-${choice.nextScene}`)?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      <div className="font-medium text-blue-600">{choice.text}</div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        Leads to: {allScenes[choice.nextScene]?.name || choice.nextScene}
+                      </div>
+                      {choice.alignment && (
+                        <div className="text-sm text-gray-500 mt-1">
+                          Alignment: {choice.alignment}
+                        </div>
+                      )}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
@@ -114,4 +269,4 @@ const DeveloperDashboard: React.FC = () => {
   );
 };
 
-export default DeveloperDashboard; 
+export default DeveloperDashboard;
