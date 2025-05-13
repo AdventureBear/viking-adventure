@@ -1,5 +1,5 @@
 
-import { Action } from "@/app/types";
+import { Action, Alignment } from "@/app/types";
 // import allActions from "@/app/lib/actions";
 
 
@@ -17,27 +17,77 @@ export const allActions: Record<string, Action> = {
           }
         ]
       },
-      
-  gain_map_from_elder: {
-    id: "gain_map_from_elder",
-    trigger: "onExit",
-    conditions: [
-      { type: "hasItem", key: "silver", value: 2, comparator: "gte" }
-    ],
-    outcomes: [
-      {
-        description: "The elder barters your silver for an ancient map.",
-        stateChanges: [
-          { type: "removeItem", key: "silver", amount: 2 },
-          { type: "addItem",    key: "map",    amount: 1 }
+      gain_map_from_elder: {
+        id: "gain_map_from_elder",
+        trigger: "onExit",
+        conditions: [
+          { type: "hasItem", key: "silver", value: 2 }
+        ],
+        "outcomes": [
+          {
+            "description": "The elder offers you a map in exchange for 2 silver. Will you accept?",
+            "stateChanges": [],                       // nothing yet
+            "choices": [                               // ← optional extension
+              {
+                "text": "Accept the map (pay 2 silver)",
+                "nextAction": "elder_map_accept",
+                "alignment": Alignment.Ljosbearer
+              },
+              {
+                "text": "Decline and keep your silver",
+                "nextAction": "elder_map_decline",
+                "alignment": Alignment.Myrkrider
+              }
+            ]
+          }
         ]
       },
-      {
-        description: "The elder smiles, but you lack the silver for his gift.",
-        stateChanges: []      // fallback if conditions fail
-      }
-    ]
-  },
+      "elder_map_accept": {
+        id: "elder_map_accept",
+        trigger: "onChoice",               // fire only when that choice is clicked
+        outcomes: [
+            {
+                description: "The elder barters your silver for an ancient map.",
+                stateChanges: [
+                    { type: "removeItem", key: "silver", amount: 2 },
+                    { type: "addItem",    key: "map",    amount: 1 },
+                    { type: "setFlag",    key: "gotMap" }
+                ]
+            }
+        ]
+    },
+    "elder_map_decline": {
+        id: "elder_map_decline",
+        trigger: "onChoice",
+        outcomes: [ 
+            {
+                description: "The elder declines your offer.",
+                stateChanges: [
+                    { type: "setFlag", key: "declinedMap" }
+                ]
+            }
+        ]
+    },
+//   gain_map_from_elder: {
+//     id: "gain_map_from_elder",
+//     trigger: "onExit",
+//     conditions: [
+//       { type: "hasItem", key: "silver", value: 2, comparator: "gte" }
+//     ],
+//     outcomes: [
+//       {
+//         description: "The elder barters your silver for an ancient map.",
+//         stateChanges: [
+//           { type: "removeItem", key: "silver", amount: 2 },
+//           { type: "addItem",    key: "map",    amount: 1 }
+//         ]
+//       },
+//       {
+//         description: "The elder smiles, but you lack the silver for his gift.",
+//         stateChanges: []      // fallback if conditions fail
+//       }
+//     ]
+//   },
 
   // --- example #1: 25 % chance of a storm -----------------
   storm_at_sea: {

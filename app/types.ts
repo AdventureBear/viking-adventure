@@ -20,7 +20,8 @@ export enum StoryPhase {
 export interface Choice {
     text: string;
     alignment: Alignment;
-    nextScene: string;
+    nextScene?: string;
+    nextAction?: string;
 }
 
 export interface Scene {
@@ -126,6 +127,7 @@ export interface Outcome {
     description?: string;         // flavour text to display
     stateChanges: StateChange[];
     nextSceneOverride?: string;   // optional detour
+    choices?: Choice[];
   }
   
   export interface Action {

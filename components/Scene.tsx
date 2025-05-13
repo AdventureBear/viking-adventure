@@ -6,6 +6,9 @@ import { Choice as ChoiceType, Scene as SceneType } from '@/app/types'
 import {ChoiceComponent} from './Choice'
 import Image from 'next/image'
 import { InventoryPanel } from './InventoryPanel'
+import { MessageBox } from './MessageBox'
+import { useGameStore } from '@/store/gameStore'
+import { useModalStore } from '@/store/modalStore'
 
 interface SceneProps {
   scene: SceneType
@@ -16,6 +19,8 @@ export function SceneComponent({ scene, onChoice }: SceneProps) {
   const [imageUrl, setImageUrl] = useState(scene.imageUrl || 'https://placehold.co/1920x1080/2d2d2d/ffffff?text=Viking+Adventure+Scene');
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { gameState } = useGameStore();
+  const currentModal = useModalStore((state) => state.current());
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
@@ -24,18 +29,9 @@ export function SceneComponent({ scene, onChoice }: SceneProps) {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     setUploading(true);
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('sceneId', scene.id);
-    const res = await fetch('/api/uploadSceneImage', {
-      method: 'POST',
-      body: formData,
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setImageUrl(data.imageUrl);
-    }
+    // Handle file upload logic here
     setUploading(false);
   };
 
@@ -75,38 +71,64 @@ export function SceneComponent({ scene, onChoice }: SceneProps) {
       </div>
 
       {/* Scene content - takes up remaining 40% */}
-      <div className="flex-1 bg-[#1a1a1a] p-2">
-        <div className="h-full flex flex-col">
-          {/* Location and Season */}
-          <div className="flex justify-between text-amber-200/90 mb-1 border-b border-amber-900/50 pb-1">
-            <p className="font-runic text-sm">
-              <span className="text-amber-400">Location:</span> {scene.location}
-            </p>
-            <p className="font-runic text-sm">
-              <span className="text-amber-400">Season:</span> {scene.season}
-            </p>
-          </div>
+      <div className="flex-1 bg-[#1a1a1a] p-4">
+        <div className="h-full flex flex-col gap-4">
+          {/* Row 1: Scene Description */}
+          <div className="flex flex-col">
+            {/* Location and Season */}
+            <div className="flex justify-between text-amber-200/90 mb-2 border-b border-amber-900/50 pb-2">
+              <p className="font-runic text-sm">
+                <span className="text-amber-400">Location:</span> {scene.location}
+              </p>
+              <p className="font-runic text-sm">
+                <span className="text-amber-400">Season:</span> {scene.season}
+              </p>
+            </div>
 
-          {/* Scene Title and Description */}
-          <div className="mb-2">
-            <h2 className="text-xl font-bold text-amber-200 mb-1 font-runic">{scene.name}</h2>
-            <ScrollArea className="h-[80px] w-full rounded-md border border-amber-900/30 bg-[#2d2d2d] p-2">
-              <p className="text-amber-100/90 text-sm leading-relaxed">{scene.text}</p>
-            </ScrollArea>
-          </div>
-
-          {/* Choices */}
-          <div className="flex-1">
-            <h3 className="text-sm font-bold text-amber-200 border-b border-amber-900/50 pb-1 mb-1">Your Choices:</h3>
-            <div className="grid gap-1">
-              {scene.choices.map((choice, index) => {
-                return (
-                  <ChoiceComponent key={index} choice={choice} onSelect={() => onChoice(choice)} />
-                );
-              })}
+            {/* Scene Title and Description */}
+            <div>
+              <h2 className="text-xl font-bold text-amber-200 mb-2 font-runic">{scene.name}</h2>
+              <ScrollArea className="h-[80px] w-full rounded-md border border-amber-900/30 bg-[#2d2d2d] p-3">
+                <p className="text-amber-100/90 text-sm leading-relaxed">{scene.text}</p>
+              </ScrollArea>
             </div>
           </div>
-        
+
+          {/* Row 2: Message Box or Navigation Choices */}
+          <div className="flex-1">
+            {currentModal ? (
+              <MessageBox />
+            ) : (
+              <div>
+                <h3 className="text-sm font-bold text-amber-200 border-b border-amber-900/50 pb-1 mb-2">Your Choices:</h3>
+                <div className="grid gap-2">
+                  {scene.choices.map((choice, index) => (
+                    <ChoiceComponent key={index} choice={choice} onSelect={() => onChoice(choice)} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Row 3: Features (3 columns) */}
+          <div className="grid grid-cols-3 gap-4">
+            {/* Inventory */}
+            <div className="bg-[#1a1a1a]/80 backdrop-blur-sm border border-amber-900/30 rounded-lg p-3">
+              <InventoryPanel inventory={gameState.inventory} flags={gameState.flags} />
+            </div>
+            
+            {/* Calendar */}
+            <div className="bg-[#1a1a1a]/80 backdrop-blur-sm border border-amber-900/30 rounded-lg p-3">
+              <h3 className="text-sm font-bold text-amber-200 font-runic mb-2">Calendar</h3>
+              <p className="text-xs text-amber-400/70">Coming soon...</p>
+            </div>
+            
+            {/* Weather */}
+            <div className="bg-[#1a1a1a]/80 backdrop-blur-sm border border-amber-900/30 rounded-lg p-3">
+              <h3 className="text-sm font-bold text-amber-200 font-runic mb-2">Weather</h3>
+              <p className="text-xs text-amber-400/70">Coming soon...</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

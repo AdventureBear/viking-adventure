@@ -2,16 +2,16 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import {SceneComponent} from '@/components/Scene'
-import {AlignmentTrackerComponent} from '@/components/AlignmentTracker'
+// import {AlignmentTrackerComponent} from '@/components/AlignmentTracker'
 import { allScenes, Choice as ChoiceType } from '@/lib/scenes'
 import SceneCreator from '@/components/SceneCreator'
-import { updateGameState } from '@/lib/gameState'
+// import { updateGameState } from '@/lib/gameState'
 import {NpcRelationshipTracker} from "@/components/NpcRelationshipTracker"
 import { StoryPhase } from '@/app/types'
 import { useGameStore } from '@/store/gameStore'
 import { runActions } from '@/engine/actionRunner'
 import { InventoryPanel } from '@/components/InventoryPanel'
-
+import { GameModal } from '@/components/GameModal'
 
 // interface OpenLoop {
 //   sceneId: string
@@ -162,38 +162,6 @@ export default function Page() {
   return (
     <div className="w-full min-h-screen bg-[#1a1a1a] text-amber-50">
       <SceneComponent scene={currentScene} onChoice={handleChoice} />
-      
-      <div className="bg-[#2d2d2d] border-t border-amber-900/50">
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <InventoryPanel inventory={gameState.inventory} flags={gameState.flags} />
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-amber-200 border-b border-amber-900/50 pb-2">
-                Your Path
-              </h2>
-              <div className="bg-[#1a1a1a] p-4 rounded-lg border border-amber-900/30">
-              
-
-                <AlignmentTrackerComponent alignmentScores={gameState.alignmentScores} />
-              </div>
-            </div>
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-amber-200 border-b border-amber-900/50 pb-2">
-                Alliances
-              </h2>
-              <div className="bg-[#1a1a1a] p-4 rounded-lg border border-amber-900/30">
-                <NpcRelationshipTracker relationships={gameState.npcs} />
-              </div>
-             
-            </div>
-           
-          </div>
-          <div className="bg-[#1a1a1a] p-4 rounded-lg border border-amber-900/30">  
-                <h2>Current Game State</h2>
-                {JSON.stringify(gameState, null, 2)}
-              </div>
-        </div>
-      </div>
     </div>
   )
 }
