@@ -1,17 +1,18 @@
-import { StoryPhase,Alignment, Choice } from '@/app/types'
+import { StoryPhase, Choice, GameState } from '@/app/types'
 
-export interface NPC {
-    name: string
-    relationship: number
-}
 
-export interface GameState {
-    alignmentScores: Record<Alignment, number>
-    inventory: string[]
-    npcs: Record<string, NPC>
-    completedScenes: string[]
-    currentStoryPhase: StoryPhase
-}
+
+// export interface GameState {
+//     alignmentScores: Record<Alignment, number>
+//     inventory: Record<string, number>
+//     npcs: Record<string, NPC>
+//     completedScenes: string[]
+//     currentStoryPhase: StoryPhase
+//     currentSceneId: string
+//     flags: Record<string, boolean>
+//     reputation: Record<string, number>
+//     health: number
+// }
 
 export const initialGameState: GameState = {
     alignmentScores: {
@@ -20,14 +21,18 @@ export const initialGameState: GameState = {
         Solheart: 0,
         Myrkrider: 0
     },
-    inventory: [],
+    inventory: {},
     npcs: {
         "Traveler": { name: "Traveler", relationship: 0 },
         "King Aella": { name: "King Aella", relationship: 0 },
         "Elder Bjorn": { name: "Elder Bjorn", relationship: 50 },
     },
     completedScenes: [],
-    currentStoryPhase: StoryPhase.PEACEFUL_BEGINNINGS
+    currentStoryPhase: StoryPhase.PEACEFUL_BEGINNINGS,
+    currentSceneId: "village_gathering",
+  flags: {},
+  reputation: {},
+  health: 10,
 }
 
 export function updateGameState(prevState: GameState, choice: Choice): GameState {

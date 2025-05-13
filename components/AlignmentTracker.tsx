@@ -8,7 +8,6 @@ interface AlignmentTrackerProps {
 }
 
 export function AlignmentTrackerComponent({ alignmentScores }: AlignmentTrackerProps) {
-  console.log('alignmentScores:', alignmentScores);
   const totalChoices = Object.values(alignmentScores).reduce((sum, val) => sum + val, 0);
 
   const getDominantAlignment = (): Alignment => {

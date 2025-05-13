@@ -14,6 +14,7 @@ export const allScenes: Record<string, Scene> = {
         season: "Late Spring, 793 AD",
         storyPhase: StoryPhase.PEACEFUL_BEGINNINGS,
         isRequired: true,
+        actions: ["children_dancing", "gain_map_from_elder"],
         choices: [
             {
                 text: "Advocate for a peaceful trading expedition",
@@ -46,6 +47,7 @@ export const allScenes: Record<string, Scene> = {
         season: "Early Summer, 793 AD",
         storyPhase: StoryPhase.PEACEFUL_BEGINNINGS,
         isRequired: false,
+        actions: ["farewell_from_elder", "storm_at_sea"],
         choices: [
             {
                 text: "Focus on gathering a diverse range of trade goods",
@@ -66,6 +68,8 @@ export const allScenes: Record<string, Scene> = {
     },
     diverse_cargo: {
         id: "diverse_cargo",
+        imageUrl: '/scene-images/diverse_cargo-1747112104889.png',
+    
         name: "A Diverse Cargo",
         text: "Your decision to focus on a wide range of trade goods pays off. The hold of your ship is filled with furs, amber, honey, and crafted items. As you set sail, the village elder praises your wisdom, noting that this variety will surely open doors in foreign lands. The crew's morale is high as you embark on this peaceful venture.",
         location: "Aboard the Longship",
@@ -87,6 +91,8 @@ export const allScenes: Record<string, Scene> = {
     },
     viking_outpost: {
         id: "viking_outpost",
+        imageUrl: '/scene-images/viking_outpost-1747112846105.png',
+    
         name: "The Viking Outpost",
         text: "You arrive at a small Viking trading post. The settlers here have established good relations with the locals and share valuable information about the surrounding lands. They offer to join your expedition, bringing their knowledge and connections.",
         location: "Viking Trading Post",
@@ -225,6 +231,8 @@ export const allScenes: Record<string, Scene> = {
     },
     peaceful_contact: {
         id: "peaceful_contact",
+        imageUrl: '/scene-images/peaceful_contact-1747111651483.png',
+    
         name: "Peaceful First Contact",
         text: "Your open approach is met with cautious curiosity. The local leaders agree to meet with you, presenting an opportunity for negotiation and alliance-building. The initial meeting goes well, and they seem interested in establishing trade relations.",
         location: "Foreign Settlement",
@@ -279,6 +287,8 @@ export const allScenes: Record<string, Scene> = {
     },
     establish_colony: {
         id: "establish_colony",
+        imageUrl: '/scene-images/establish_colony-1747112298049.png',
+    
         name: "Establishing the Colony",
         text: "With a foothold in this new land, you begin the process of establishing a permanent Viking settlement. However, tensions rise as different factions within your group have conflicting visions for the colony's future.",
         location: "New Viking Settlement",

@@ -1,3 +1,5 @@
+
+
 export enum Alignment {
     Ljosbearer = "Ljosbearer",
     Skuggasmith = "Skuggasmith",
@@ -32,6 +34,12 @@ export interface Scene {
     isDynamicallyGenerated?: boolean;
     imageUrl?: string;
     choices: Choice[];
+    actions?: string[];
+}
+
+export interface NPC {
+    name: string
+    relationship: number
 }
 
 export interface GameState {
@@ -39,6 +47,11 @@ export interface GameState {
     alignmentScores: Record<Alignment, number>;
     completedScenes: string[];
     currentStoryPhase: StoryPhase;
+    inventory: Record<string, number>;
+    flags: Record<string, boolean>;
+    reputation: Record<string, number>;
+    health: number;
+    npcs: Record<string, NPC>;
 }
 
 export interface NpcRelationship {
@@ -89,3 +102,52 @@ export interface SceneComponentProps {
     scene: Scene;
     onChoiceMade: (choice: Choice) => void;
 }
+
+
+// Game State Management with Actions and Conditions
+export type Trigger =
+  | "onEnter"   // fires when a scene is loaded
+  | "onExit"    // fires just before leaving a scene
+  | "onChoice" // fires when a choice is made
+  | "onItem" // fires when an item is added to the inventory
+  | "onFlag" // fires when a flag is set
+  | "onRep" // fires when reputation is changed
+  | "onHealth" // fires when health is changed
+  | "onAlignment" // fires when alignment is changed
+  | "onRandom"; // fires immediately after clicking a choice
+
+  export interface StateChange {
+    type: "addItem" | "removeItem" | "setFlag";
+    key: string;          // item or flag name
+    amount?: number;      // default = 1 for add/remove
+  }
+
+export interface Outcome {
+    description?: string;         // flavour text to display
+    stateChanges: StateChange[];
+    nextSceneOverride?: string;   // optional detour
+  }
+  
+  export interface Action {
+    id: string;
+    trigger: Trigger;
+    conditions?: Condition[];     // all must pass (AND)
+    outcomes: Outcome[];          // choose first that matches its own conds, or weight/prob
+  }
+
+  type ConditionValue = string | number | boolean | Alignment;
+
+
+  export interface Condition {
+    type: "hasItem" | "flag" | "random" | "reputation" | "alignment";
+    key?:   string;        // item name, flag id, etc.
+    value?: ConditionValue;           // expected value (true, 3+, etc.)
+    chance?: number;       // 0–1 for random rolls
+    comparator?: "gte" | "eq" | "lte" | "neq";
+  }
+  
+  export interface StateChange {
+    type: "addItem" | "removeItem" | "setFlag" 
+    key: string;
+    amount?: number | undefined;
+  }

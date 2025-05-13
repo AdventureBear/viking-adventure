@@ -9,6 +9,8 @@ import { updateGameState } from '@/lib/gameState'
 import {NpcRelationshipTracker} from "@/components/NpcRelationshipTracker"
 import { StoryPhase } from '@/app/types'
 import { useGameStore } from '@/store/gameStore'
+import { runActions } from '@/engine/actionRunner'
+
 
 // interface OpenLoop {
 //   sceneId: string
@@ -107,14 +109,29 @@ export default function Page() {
   const { gameState, setGameState } = useGameStore()
 
   const currentScene = allScenes[id]
+  //Should only run when etnering the current scene
+  console.log(`\n#########################\n Entering ${currentScene.name} with ${currentScene.actions?.length ?? 0} actions`)
+  if (currentScene.actions) {
+    runActions(currentScene.actions, "onEnter", gameState)
+  }
 
   const handleChoice = (choice: ChoiceType) => {
-    console.log('Choice alignment:', choice.alignment);
-    console.log(Object.keys(gameState.alignmentScores))
+    console.log(`Exiting scene ${currentScene.name} to ${choice.nextScene}`)
+    // if (currentScene.actions) {
+    //   console.log('Choice made:', choice)
+    //   console.log('Running actions, onChoice:', currentScene.actions)
+    //   runActions(currentScene.actions, "onChoice", gameState)
+    // }
     
-    const newGameState = updateGameState(gameState, choice)
-    setGameState(newGameState)
     // setConnections(prev => [...prev, { source: id, target: choice.nextScene }])
+
+    if (currentScene.actions) {
+      // console.log('Exiting scene', currentScene)
+      console.log('Running actions, onExit:', currentScene.actions)
+      runActions(currentScene.actions, "onExit", gameState)
+    }
+    // const newGameState = updateGameState(gameState, choice)
+    // setGameState(newGameState)
     router.push(`/scene/${choice.nextScene}`)
   }
 
@@ -153,6 +170,8 @@ export default function Page() {
                 Your Path
               </h2>
               <div className="bg-[#1a1a1a] p-4 rounded-lg border border-amber-900/30">
+              
+
                 <AlignmentTrackerComponent alignmentScores={gameState.alignmentScores} />
               </div>
             </div>
@@ -163,8 +182,14 @@ export default function Page() {
               <div className="bg-[#1a1a1a] p-4 rounded-lg border border-amber-900/30">
                 <NpcRelationshipTracker relationships={gameState.npcs} />
               </div>
+             
             </div>
+           
           </div>
+          <div className="bg-[#1a1a1a] p-4 rounded-lg border border-amber-900/30">  
+                <h2>Current Game State</h2>
+                {JSON.stringify(gameState, null, 2)}
+              </div>
         </div>
       </div>
     </div>
