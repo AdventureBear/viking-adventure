@@ -10,6 +10,7 @@ import {NpcRelationshipTracker} from "@/components/NpcRelationshipTracker"
 import { StoryPhase } from '@/app/types'
 import { useGameStore } from '@/store/gameStore'
 import { runActions } from '@/engine/actionRunner'
+import { InventoryPanel } from '@/components/InventoryPanel'
 
 
 // interface OpenLoop {
@@ -165,6 +166,7 @@ export default function Page() {
       <div className="bg-[#2d2d2d] border-t border-amber-900/50">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <InventoryPanel inventory={gameState.inventory} flags={gameState.flags} />
             <div className="space-y-4">
               <h2 className="text-2xl font-bold text-amber-200 border-b border-amber-900/50 pb-2">
                 Your Path

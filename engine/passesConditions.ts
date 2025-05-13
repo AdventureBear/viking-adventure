@@ -1,4 +1,3 @@
-
 import { Condition } from "@/app/types";
 import { GameState } from "@/app/types";
 
@@ -11,18 +10,32 @@ export interface ConditionReport {
     passed: boolean;          // all conditions passed?
     reports: ConditionReport[]; // one entry per condition
   }
+
+  function checkHasItem(cond: Condition, state: GameState): boolean {
+    const have = state.inventory[cond.key!] ?? 0;
+    const need = Number(cond.value ?? 1);
+    const cmp  = cond.comparator ?? "gte";
+    return cmp === "eq" ? have === need : have >= need;
+  }
   
   export function passesConditions(
     conds: Condition[] | undefined,
-    _state: GameState
+    state: GameState
   ): ConditionsResult {
     if (!conds || conds.length === 0)
       return { passed: true, reports: [{ pass: true, msg: "always passes" }] };
   
-    const reports = conds.map<ConditionReport>((c) => {
-      switch (c.type) {
+    const reports = conds.map<ConditionReport>((choice) => {
+      switch (choice.type) {
+        case "hasItem": {
+            const pass = checkHasItem(choice, state);
+            return {
+              pass,
+              msg: `👜 hasItem • ${choice.key}=${state.inventory[choice.key!] ?? 0} / need ${choice.value ?? 1} (${pass ? "PASS" : "FAIL"})`,
+            };
+          }
         case "random": {
-          const chance = c.chance ?? 1;
+          const chance = choice.chance ?? 1;
           const roll   = Math.random();
           const pass   = roll < chance;
           return {
@@ -36,7 +49,7 @@ export interface ConditionReport {
         default:
           return {
             pass: true,
-            msg: `ℹ︎ unsupported type '${c.type}' → PASS`,
+            msg: `ℹ︎ unsupported type '${choice.type}' → PASS`,
           };
       }
     });

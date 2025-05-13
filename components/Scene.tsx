@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Choice as ChoiceType, Scene as SceneType } from '@/app/types'
 import {ChoiceComponent} from './Choice'
 import Image from 'next/image'
+import { InventoryPanel } from './InventoryPanel'
 
 interface SceneProps {
   scene: SceneType
@@ -105,6 +106,7 @@ export function SceneComponent({ scene, onChoice }: SceneProps) {
               })}
             </div>
           </div>
+        
         </div>
       </div>
     </div>

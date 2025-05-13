@@ -21,7 +21,9 @@ export const initialGameState: GameState = {
         Solheart: 0,
         Myrkrider: 0
     },
-    inventory: {},
+    inventory: {
+        silver: 2,
+    },
     npcs: {
         "Traveler": { name: "Traveler", relationship: 0 },
         "King Aella": { name: "King Aella", relationship: 0 },

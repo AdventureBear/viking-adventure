@@ -17,16 +17,27 @@ export const allActions: Record<string, Action> = {
           }
         ]
       },
-      gain_map_from_elder: {
-        id: "gain_map_from_elder",
-        trigger: "onExit",
-        outcomes: [
-          {
-            description: "The elder secretly slips you a *hand‑drawn map*.",
-            stateChanges: [{ type: "addItem", key: "map", amount: 1 }],
-          },
-        ],
-      },    
+      
+  gain_map_from_elder: {
+    id: "gain_map_from_elder",
+    trigger: "onExit",
+    conditions: [
+      { type: "hasItem", key: "silver", value: 2, comparator: "gte" }
+    ],
+    outcomes: [
+      {
+        description: "The elder barters your silver for an ancient map.",
+        stateChanges: [
+          { type: "removeItem", key: "silver", amount: 2 },
+          { type: "addItem",    key: "map",    amount: 1 }
+        ]
+      },
+      {
+        description: "The elder smiles, but you lack the silver for his gift.",
+        stateChanges: []      // fallback if conditions fail
+      }
+    ]
+  },
 
   // --- example #1: 25 % chance of a storm -----------------
   storm_at_sea: {

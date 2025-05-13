@@ -145,6 +145,9 @@ export interface Outcome {
     chance?: number;       // 0–1 for random rolls
     comparator?: "gte" | "eq" | "lte" | "neq";
   }
+
+
+
   
   export interface StateChange {
     type: "addItem" | "removeItem" | "setFlag" 

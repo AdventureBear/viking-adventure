@@ -1,6 +1,7 @@
 import { GameState } from '@/app/types';
 import { initialGameState } from '@/lib/gameState';
 import {create} from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 
 interface GameStore {
@@ -13,13 +14,27 @@ type GameStatePatch = Partial<GameState>;
 
 
 
-export const useGameStore = create<GameStore>((set) => ({
-  gameState: initialGameState,
+
+  export const useGameStore = create<GameStore>()(
+    persist(
+      (set) => ({
+        /* ---------- STATE ---------- */
+        gameState: initialGameState,
   
-  setGameState: (newState: GameState) => set({ gameState: newState }),
-
-  updateGameState: (patch: GameStatePatch) =>
-    set((state) => ({ gameState: { ...state.gameState, ...patch } }))
-
-}));
+        /* ---------- ACTIONS ---------- */
+        setGameState: (newState) =>
+          set({ gameState: newState }),
+  
+        updateGameState: (patch: GameStatePatch) =>
+          set((state) => ({
+            gameState: { ...state.gameState, ...patch } as GameState,
+          })),
+      }),
+      {
+        name: 'viking-cyoa-save',                     // localStorage key
+        storage: createJSONStorage(() => localStorage),
+        partialize: (state) => ({ gameState: state.gameState }), // save just gameState
+      }
+    )
+  );
 
