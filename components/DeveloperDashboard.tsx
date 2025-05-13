@@ -64,9 +64,11 @@ const DeveloperDashboard = () => {
     const nodeMap = new Map(nodes.map(n => [n.id, n]));
     Object.values(allScenes).forEach(scene => {
       scene.choices.forEach(choice => {
-        const target = nodeMap.get(choice.nextScene);
-        if (target) {
-          target.parentIds.push(scene.id);
+        if (choice.nextScene) {
+          const target = nodeMap.get(choice.nextScene);
+          if (target) {
+            target.parentIds.push(scene.id);
+          }
         }
       });
     });
@@ -239,25 +241,20 @@ const DeveloperDashboard = () => {
                 <h4 className="font-medium mb-2">Choices:</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {scene.choices.map((choice, index) => (
-                    <a
-                      key={index}
-                      href={`#scene-${choice.nextScene}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        document.getElementById(`scene-${choice.nextScene}`)?.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <div className="font-medium text-blue-600">{choice.text}</div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        Leads to: {allScenes[choice.nextScene]?.name || choice.nextScene}
-                      </div>
-                      {choice.alignment && (
-                        <div className="text-sm text-gray-500 mt-1">
-                          Alignment: {choice.alignment}
-                        </div>
-                      )}
-                    </a>
+                    choice.nextScene && (
+                      <a
+                        key={index}
+                        href={`#scene-${choice.nextScene}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          document.getElementById(`scene-${choice.nextScene}`)?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="block p-3 bg-gray-50 hover:bg-gray-100 rounded transition-colors"
+                      >
+                        <p className="font-medium">{choice.text}</p>
+                        <p className="text-sm text-gray-600">→ {allScenes[choice.nextScene]?.name || 'Unknown Scene'}</p>
+                      </a>
+                    )
                   ))}
                 </div>
               </div>

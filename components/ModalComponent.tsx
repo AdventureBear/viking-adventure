@@ -13,7 +13,7 @@ export function GameModal() {
   function handleClick(choice?: { nextAction?: string }) {
     pop();                                // close current modal
     if (choice?.nextAction) {
-      runActions([choice.nextAction], 'onChoice', gameState, '(modal)');
+      runActions([choice.nextAction], 'onChoice', gameState);
     }
   }
 

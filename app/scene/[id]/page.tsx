@@ -6,12 +6,12 @@ import {SceneComponent} from '@/components/Scene'
 import { allScenes, Choice as ChoiceType } from '@/lib/scenes'
 import SceneCreator from '@/components/SceneCreator'
 // import { updateGameState } from '@/lib/gameState'
-import {NpcRelationshipTracker} from "@/components/NpcRelationshipTracker"
+// import {NpcRelationshipTracker} from "@/components/NpcRelationshipTracker"
 import { StoryPhase } from '@/app/types'
 import { useGameStore } from '@/store/gameStore'
 import { runActions } from '@/engine/actionRunner'
-import { InventoryPanel } from '@/components/InventoryPanel'
-import { GameModal } from '@/components/GameModal'
+// import { InventoryPanel } from '@/components/InventoryPanel'
+// import { GameModal } from '@/components/GameModal'
 
 // interface OpenLoop {
 //   sceneId: string
@@ -107,7 +107,7 @@ export default function Page() {
   const params = useParams()
   const router = useRouter()
   const id = params?.id as string
-  const { gameState, setGameState } = useGameStore()
+  const { gameState } = useGameStore()
 
   const currentScene = allScenes[id]
   //Should only run when etnering the current scene
@@ -118,21 +118,11 @@ export default function Page() {
 
   const handleChoice = (choice: ChoiceType) => {
     console.log(`Exiting scene ${currentScene.name} to ${choice.nextScene}`)
-    // if (currentScene.actions) {
-    //   console.log('Choice made:', choice)
-    //   console.log('Running actions, onChoice:', currentScene.actions)
-    //   runActions(currentScene.actions, "onChoice", gameState)
-    // }
     
-    // setConnections(prev => [...prev, { source: id, target: choice.nextScene }])
-
     if (currentScene.actions) {
-      // console.log('Exiting scene', currentScene)
       console.log('Running actions, onExit:', currentScene.actions)
       runActions(currentScene.actions, "onExit", gameState)
     }
-    // const newGameState = updateGameState(gameState, choice)
-    // setGameState(newGameState)
     router.push(`/scene/${choice.nextScene}`)
   }
 

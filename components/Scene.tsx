@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React from 'react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Choice as ChoiceType, Scene as SceneType } from '@/app/types'
 import {ChoiceComponent} from './Choice'
@@ -16,24 +16,8 @@ interface SceneProps {
 }
 
 export function SceneComponent({ scene, onChoice }: SceneProps) {
-  const [imageUrl, setImageUrl] = useState(scene.imageUrl || 'https://placehold.co/1920x1080/2d2d2d/ffffff?text=Viking+Adventure+Scene');
-  const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { gameState } = useGameStore();
   const currentModal = useModalStore((state) => state.current());
-
-  const handleImageClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    // Handle file upload logic here
-    setUploading(false);
-  };
 
   return (
     <div className="relative h-screen flex flex-col">
@@ -43,31 +27,10 @@ export function SceneComponent({ scene, onChoice }: SceneProps) {
           priority
           width={1920}
           height={1080}
-          src={imageUrl}
+          src={scene.imageUrl || 'https://placehold.co/1920x1080/2d2d2d/ffffff?text=Viking+Adventure+Scene'}
           alt="Scene landscape"
           className="w-full h-full object-cover"
-          style={{ opacity: uploading ? 0.5 : 1 }}
         />
-        {!scene.imageUrl && (
-          <>
-            <div
-              className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-              onClick={handleImageClick}
-            >
-              <span className="text-white text-lg font-semibold bg-black/50 px-4 py-2 rounded">
-                {uploading ? 'Uploading...' : 'Click to upload image'}
-              </span>
-            </div>
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-              disabled={uploading}
-            />
-          </>
-        )}
       </div>
 
       {/* Scene content - takes up remaining 40% */}

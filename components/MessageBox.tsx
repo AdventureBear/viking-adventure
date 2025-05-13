@@ -1,6 +1,6 @@
 'use client';
 
-import { useModalStore } from '@/store/modalStore';
+import { useModalStore, ModalChoice } from '@/store/modalStore';
 import { Button } from '@/components/ui/button';
 import { handleModalChoice } from '@/engine/actionRunner';
 
@@ -10,7 +10,7 @@ export function MessageBox() {
 
   if (!currentModal) return null;
 
-  const handleChoice = (choice: any) => {
+  const handleChoice = (choice: ModalChoice) => {
     handleModalChoice(choice);
   };
 
@@ -24,7 +24,7 @@ export function MessageBox() {
       
       <div className="space-y-2">
         {currentModal.choices ? (
-          currentModal.choices.map((choice: any, index: number) => (
+          currentModal.choices.map((choice: ModalChoice, index: number) => (
             <Button
               key={index}
               onClick={() => handleChoice(choice)}
