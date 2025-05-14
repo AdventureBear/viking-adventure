@@ -115,7 +115,19 @@ export const allActions: Record<string, Action> = {
       }
     ]
   },
-
+  seer_vision: {
+    id: "seer_vision",
+    trigger: "onEnter",
+    outcomes: [
+      {
+        description: 'The seer gives you a mysterious omen token.',
+        stateChanges: [
+            { type: "setFlag", key: "visitedSeer" },
+            {type: "addItem", key: "Omen Token", amount: 1}
+        ]
+      }
+    ]
+  }
 };
 
 

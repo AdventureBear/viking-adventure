@@ -91,7 +91,7 @@ export const allScenes: Record<string, Scene> = {
     },
     seer_prophecy: {
         id: "seer_prophecy",
-        // imageUrl: '/scene-images/seer_prophecy-1747029157872.png',
+        imageUrl: '/scene-images/seer_prophecy-1747029157872.png',
         name: "The Seer's Tent",
         text: "In a dimly lit tent at the edge of the village, the air smells of herbs and smoke. The ancient völva, eyes clouded with age and wisdom, beckons you forward. She reaches for your hand and begins to speak in a low voice filled with portent.",
         location: "The Seer’s Tent, Coastal Village",
