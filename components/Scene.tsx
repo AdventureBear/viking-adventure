@@ -3,8 +3,8 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Choice as ChoiceType } from '@/app/types'
 import Image from 'next/image'
-import { MessageBox } from './MessageBox'
-import { useGameStore } from '@/store/gameStore'
+// import { MessageBox } from './MessageBox'
+// import { useGameStore } from '@/store/gameStore'
 import { useModalStore } from '@/store/modalStore'
 import { allScenes } from '@/lib/scenes'
 import { MenuPopover } from './MenuPopover'
@@ -16,7 +16,7 @@ interface SceneProps {
 }
 
 export default function SceneComponent({ sceneId, onChoice }: SceneProps) {
-  const gameState = useGameStore((state) => state.gameState)
+  // const gameState = useGameStore((state) => state.gameState)
   const scene = allScenes[sceneId]
   const modal = useModalStore((state) => state.current())
 
@@ -29,7 +29,21 @@ export default function SceneComponent({ sceneId, onChoice }: SceneProps) {
   const descTextRef = useRef<HTMLDivElement>(null)
   const [isTruncated, setIsTruncated] = useState(false)
 
-  if (!scene) return <div>Scene not found.</div>
+ 
+    // Check if the description is actually truncated (overflows 3 lines)
+    useEffect(() => {
+      if (descTextRef.current && !descExpanded) {
+        const el = descTextRef.current;
+        const lineHeight = parseFloat(getComputedStyle(el).lineHeight || '20');
+        const maxHeight = lineHeight * 3.2; // add buffer for 3 lines
+        setIsTruncated(el.scrollHeight > maxHeight + 2); // +2 for rounding
+      } else {
+        setIsTruncated(false);
+      }
+    }, [scene.text, descExpanded]);
+
+    if (!scene) return <div>Scene not found.</div>
+
 
   // Fallback image URL if scene.imageUrl is undefined
   const imageUrl = localImageUrl || 'https://placehold.co/1920x1080/2d2d2d/ffffff.png?text=Viking+Adventure+Scene'
@@ -63,17 +77,7 @@ export default function SceneComponent({ sceneId, onChoice }: SceneProps) {
   // If no image, show upload UI
   const showUploader = !localImageUrl
 
-  // Check if the description is actually truncated (overflows 3 lines)
-  useEffect(() => {
-    if (descTextRef.current && !descExpanded) {
-      const el = descTextRef.current;
-      const lineHeight = parseFloat(getComputedStyle(el).lineHeight || '20');
-      const maxHeight = lineHeight * 3.2; // add buffer for 3 lines
-      setIsTruncated(el.scrollHeight > maxHeight + 2); // +2 for rounding
-    } else {
-      setIsTruncated(false);
-    }
-  }, [scene.text, descExpanded]);
+
 
   // Scroll overlay into view when collapsing
   const handleShowLess = () => {
