@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import {SceneComponent} from '@/components/Scene'
+import SceneComponent from '@/components/Scene'
 // import {AlignmentTrackerComponent} from '@/components/AlignmentTracker'
 import { allScenes, Choice as ChoiceType } from '@/lib/scenes'
 import SceneCreator from '@/components/SceneCreator'
@@ -151,7 +151,7 @@ export default function Page() {
 
   return (
     <div className="w-full min-h-screen bg-[#1a1a1a] text-amber-50">
-      <SceneComponent scene={currentScene} onChoice={handleChoice} />
+      <SceneComponent sceneId={id} onChoice={handleChoice} />
     </div>
   )
 }
