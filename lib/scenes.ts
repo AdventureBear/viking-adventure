@@ -89,6 +89,39 @@ export const allScenes: Record<string, Scene> = {
             }
         ]
     },
+    seer_prophecy: {
+        id: "seer_prophecy",
+        // imageUrl: '/scene-images/seer_prophecy-1747029157872.png',
+        name: "The Seer's Tent",
+        text: "In a dimly lit tent at the edge of the village, the air smells of herbs and smoke. The ancient völva, eyes clouded with age and wisdom, beckons you forward. She reaches for your hand and begins to speak in a low voice filled with portent.",
+        location: "The Seer’s Tent, Coastal Village",
+        season: "Late Spring, 793 AD",
+        storyPhase: StoryPhase.PEACEFUL_BEGINNINGS,
+        isRequired: true,
+        actions: ["seer_vision"],
+        choices: [
+          {
+            text: "Interpret the vision as a call to protect the innocent.",
+            alignment: Alignment.Ljosbearer,
+            nextScene: "village_gathering"
+          },
+          {
+            text: "Seek deeper secrets hidden within the vision.",
+            alignment: Alignment.Skuggasmith,
+            nextScene: "village_gathering"
+          },
+          {
+            text: "See the vision as a challenge to prove your strength.",
+            alignment: Alignment.Solheart,
+            nextScene: "village_gathering"
+          },
+          {
+            text: "Embrace the chaos and power the vision promises.",
+            alignment: Alignment.Myrkrider,
+            nextScene: "village_gathering"
+          }
+        ]
+      },      
     viking_outpost: {
         id: "viking_outpost",
         imageUrl: '/scene-images/viking_outpost-1747112846105.png',

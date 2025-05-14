@@ -47,7 +47,7 @@ export const allActions: Record<string, Action> = {
         trigger: "onChoice",               // fire only when that choice is clicked
         outcomes: [
             {
-                description: "The elder barters your silver for an ancient map.",
+                description: "The elder accepts your silver for an ancient map. Keep it safe! he snarls.",
                 stateChanges: [
                     { type: "removeItem", key: "silver", amount: 2 },
                     { type: "addItem",    key: "map",    amount: 1 },
